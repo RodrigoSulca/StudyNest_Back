@@ -1,4 +1,5 @@
 const anuncioRepository = require('../repositories/anuncio.repository');
+const notificacionService = require('./notificacion.service');
 
 const TRANSICIONES_VALIDAS = {
   BORRADOR: ['ACTIVO'],
@@ -106,6 +107,10 @@ class AnuncioService {
     }
 
     const updated = await anuncioRepository.update(id, { estado: nuevoEstado });
+
+    if (nuevoEstado === 'ACTIVO' && anuncio.estado !== 'ACTIVO') {
+      await notificacionService.notifyNewListing(updated);
+    }
 
     return {
       mensaje: 'Estado del anuncio actualizado exitosamente',

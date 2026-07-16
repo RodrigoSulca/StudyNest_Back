@@ -1,6 +1,7 @@
 const resenaRepository = require('../repositories/resena.repository');
 const reporteRepository = require('../repositories/reporte.repository');
 const historialRepository = require('../repositories/historial.repository');
+const notificacionService = require('./notificacion.service');
 
 const ACCIONES_VALIDAS = ['APROBADA', 'RECHAZADA', 'ELIMINADA'];
 
@@ -21,6 +22,11 @@ class ResenaService {
       comentario: data.comentario,
       estado: 'PENDIENTE',
     });
+
+    const alojamiento = await resenaRepository.findById(resena.id);
+    if (alojamiento && alojamiento.alojamiento) {
+      await notificacionService.notifyNewReview(resena, alojamiento.alojamiento);
+    }
 
     return {
       mensaje: 'Reseña creada exitosamente',
@@ -165,6 +171,8 @@ class ResenaService {
     });
 
     const updated = await resenaRepository.findById(id);
+
+    await notificacionService.notifyReviewModerated(updated, accion);
 
     return {
       mensaje: `Reseña ${accion.toLowerCase()} exitosamente`,
