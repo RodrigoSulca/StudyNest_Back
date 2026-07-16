@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const http = require('http');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api', routes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(errorHandler);
 

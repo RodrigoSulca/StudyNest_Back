@@ -8,6 +8,8 @@ const ReporteResena = require('./reporte_resena');
 const HistorialModeracion = require('./historial_moderacion');
 const Notificacion = require('./notificacion');
 const PreferenciaNotificacion = require('./preferencia_notificacion');
+const Multimedia = require('./multimedia');
+const RegistroValidacionIA = require('./registro_validacion_ia');
 
 Usuario.hasOne(Credencial, { foreignKey: 'usuario_id', as: 'credencial' });
 Credencial.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
@@ -36,4 +38,10 @@ Notificacion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 PreferenciaNotificacion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
 Usuario.hasOne(PreferenciaNotificacion, { foreignKey: 'usuario_id', as: 'preferencia_notificacion' });
 
-module.exports = { sequelize, Usuario, Credencial, Sesion, Anuncio, Resena, ReporteResena, HistorialModeracion, Notificacion, PreferenciaNotificacion };
+Anuncio.hasMany(Multimedia, { foreignKey: 'anuncio_id', as: 'multimedia' });
+Multimedia.belongsTo(Anuncio, { foreignKey: 'anuncio_id', as: 'anuncio' });
+
+Multimedia.hasMany(RegistroValidacionIA, { foreignKey: 'multimedia_id', as: 'registros_validacion' });
+RegistroValidacionIA.belongsTo(Multimedia, { foreignKey: 'multimedia_id', as: 'multimedia' });
+
+module.exports = { sequelize, Usuario, Credencial, Sesion, Anuncio, Resena, ReporteResena, HistorialModeracion, Notificacion, PreferenciaNotificacion, Multimedia, RegistroValidacionIA };

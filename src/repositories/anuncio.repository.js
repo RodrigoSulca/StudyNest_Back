@@ -1,5 +1,5 @@
 const { Op, fn, col, literal } = require('sequelize');
-const { Anuncio, Usuario } = require('../models');
+const { Anuncio, Usuario, Multimedia } = require('../models');
 
 function toRadians(degrees) {
   return degrees * (Math.PI / 180);
@@ -12,7 +12,10 @@ class AnuncioRepository {
 
   async findById(id) {
     return Anuncio.findByPk(id, {
-      include: [{ model: Usuario, as: 'arrendador', attributes: ['id', 'nombre', 'correo'] }],
+      include: [
+        { model: Usuario, as: 'arrendador', attributes: ['id', 'nombre', 'correo'] },
+        { model: Multimedia, as: 'multimedia', attributes: ['id', 'url_almacenamiento', 'tipo_archivo', 'estado', 'orden'], where: { estado: 'APROBADA' }, required: false },
+      ],
     });
   }
 
