@@ -18,6 +18,10 @@ class UsuarioRepository {
     if (!usuario) return null;
     return usuario.update(data);
   }
+
+  async findByRol(rol) {
+    return Usuario.findAll({ where: { rol } });
+  }
 }
 
 module.exports = new UsuarioRepository();

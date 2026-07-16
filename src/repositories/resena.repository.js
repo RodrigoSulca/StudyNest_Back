@@ -10,7 +10,7 @@ class ResenaRepository {
     return Resena.findByPk(id, {
       include: [
         { model: Usuario, as: 'autor', attributes: ['id', 'nombre', 'correo', 'rol'] },
-        { model: Anuncio, as: 'alojamiento', attributes: ['id', 'titulo', 'direccion'] },
+        { model: Anuncio, as: 'alojamiento', attributes: ['id', 'titulo', 'direccion', 'arrendador_id'] },
       ],
     });
   }
