@@ -6,6 +6,8 @@ const Anuncio = require('./anuncio');
 const Resena = require('./resena');
 const ReporteResena = require('./reporte_resena');
 const HistorialModeracion = require('./historial_moderacion');
+const Notificacion = require('./notificacion');
+const PreferenciaNotificacion = require('./preferencia_notificacion');
 
 Usuario.hasOne(Credencial, { foreignKey: 'usuario_id', as: 'credencial' });
 Credencial.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
@@ -28,4 +30,10 @@ Resena.hasMany(ReporteResena, { foreignKey: 'resena_id', as: 'reportes' });
 HistorialModeracion.belongsTo(Resena, { foreignKey: 'resena_id', as: 'resena' });
 Resena.hasMany(HistorialModeracion, { foreignKey: 'resena_id', as: 'historial' });
 
-module.exports = { sequelize, Usuario, Credencial, Sesion, Anuncio, Resena, ReporteResena, HistorialModeracion };
+Usuario.hasMany(Notificacion, { foreignKey: 'usuario_id', as: 'notificaciones' });
+Notificacion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
+
+PreferenciaNotificacion.belongsTo(Usuario, { foreignKey: 'usuario_id', as: 'usuario' });
+Usuario.hasOne(PreferenciaNotificacion, { foreignKey: 'usuario_id', as: 'preferencia_notificacion' });
+
+module.exports = { sequelize, Usuario, Credencial, Sesion, Anuncio, Resena, ReporteResena, HistorialModeracion, Notificacion, PreferenciaNotificacion };
