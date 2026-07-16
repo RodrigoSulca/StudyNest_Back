@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const usuarioRoutes = require('./usuario.routes');
 const anuncioRoutes = require('./anuncio.routes');
+const resenaRoutes = require('./resena.routes');
 
 router.use('/usuarios', usuarioRoutes);
 router.use('/anuncios', anuncioRoutes);
+router.use('/resenas', resenaRoutes);
 
 router.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
