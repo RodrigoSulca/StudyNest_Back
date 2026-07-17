@@ -5,12 +5,14 @@ const anuncioRoutes = require('./anuncio.routes');
 const resenaRoutes = require('./resena.routes');
 const notificacionRoutes = require('./notificacion.routes');
 const multimediaRoutes = require('./multimedia.routes');
+const iaRoutes = require('./ia.routes');
 
 router.use('/usuarios', usuarioRoutes);
 router.use('/anuncios', anuncioRoutes);
 router.use('/resenas', resenaRoutes);
 router.use('/notificaciones', notificacionRoutes);
 router.use('/multimedia', multimediaRoutes);
+router.use('/ia', iaRoutes);
 
 router.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
