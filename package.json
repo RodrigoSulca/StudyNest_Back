@@ -7,6 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "ia:warmup": "node scripts/warmup-ia.js",
+    "ia:probar": "node scripts/probar-ia.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:create": "npx sequelize-cli db:create",
     "db:migrate": "npx sequelize-cli db:migrate",

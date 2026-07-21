@@ -1,6 +1,6 @@
 // Pre-descarga y carga el modelo de validación IA (CLIP) a la caché local.
 // Ejecutar una vez con internet:  npm run ia:warmup
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const validacionIAService = require('../src/services/validacionIA.service');
 
 (async () => {

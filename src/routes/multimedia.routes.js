@@ -23,7 +23,7 @@ router.post('/upload/:anuncio_id', authenticate, requireRole('arrendador'), (req
   });
 });
 
-router.get('/anuncio/:anuncio_id', (req, res, next) => controller.getByAnuncioId(req, res, next));
+router.get('/anuncio/:anuncio_id', authenticate.optional, (req, res, next) => controller.getByAnuncioId(req, res, next));
 router.get('/:id', (req, res, next) => controller.getById(req, res, next));
 
 router.patch('/:id/orden', authenticate, (req, res, next) => controller.updateOrden(req, res, next));

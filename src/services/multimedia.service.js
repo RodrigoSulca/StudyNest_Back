@@ -85,9 +85,21 @@ class MultimediaService {
     }
   }
 
-  async getByAnuncioId(anuncioId) {
+  async getByAnuncioId(anuncioId, usuario) {
     const multimedia = await multimediaRepository.findByAnuncioId(anuncioId);
-    return { multimedia };
+
+    // El dueño del anuncio y los administradores ven todas las imágenes
+    // (incluidas las rechazadas, para poder reemplazarlas o moderarlas).
+    // El público general no ve las imágenes rechazadas por la IA.
+    const anuncio = await Anuncio.findByPk(anuncioId);
+    const esDueno = usuario && anuncio && usuario.id === anuncio.arrendador_id;
+    const esAdmin = usuario && usuario.rol === 'administrador';
+
+    const visibles = esDueno || esAdmin
+      ? multimedia
+      : multimedia.filter(m => m.estado !== 'RECHAZADA');
+
+    return { multimedia: visibles };
   }
 
   async getById(id) {

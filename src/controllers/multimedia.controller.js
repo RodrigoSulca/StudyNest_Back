@@ -12,7 +12,7 @@ class MultimediaController {
 
   async getByAnuncioId(req, res, next) {
     try {
-      const result = await multimediaService.getByAnuncioId(req.params.anuncio_id);
+      const result = await multimediaService.getByAnuncioId(req.params.anuncio_id, req.user);
       res.json(result);
     } catch (error) {
       next(error);

@@ -18,4 +18,20 @@ function authenticate(req, res, next) {
   }
 }
 
+// Autenticación opcional: si hay un token válido setea req.user, pero no bloquea
+// a visitantes anónimos. Útil en endpoints públicos que muestran contenido
+// distinto según quién los consulte (p. ej. el dueño ve más que el público).
+function optionalAuthenticate(req, res, next) {
+  const token = req.cookies[COOKIE_NAME];
+  if (token) {
+    try {
+      req.user = verifyToken(token);
+    } catch {
+      // Token inválido o expirado: se trata como visitante anónimo.
+    }
+  }
+  next();
+}
+
 module.exports = authenticate;
+module.exports.optional = optionalAuthenticate;
