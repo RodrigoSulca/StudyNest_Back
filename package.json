@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "ia:warmup": "node scripts/warmup-ia.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:create": "npx sequelize-cli db:create",
     "db:migrate": "npx sequelize-cli db:migrate",
@@ -25,6 +26,7 @@
   },
   "homepage": "https://github.com/RodrigoSulca/StudyNest_Back#readme",
   "dependencies": {
+    "@xenova/transformers": "^2.17.2",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

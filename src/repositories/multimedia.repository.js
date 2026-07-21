@@ -18,6 +18,7 @@ class MultimediaRepository {
   async findByAnuncioId(anuncioId) {
     return Multimedia.findAll({
       where: { anuncio_id: anuncioId },
+      include: [{ model: RegistroValidacionIA, as: 'registros_validacion' }],
       order: [['orden', 'ASC'], ['fecha_subida', 'ASC']],
     });
   }

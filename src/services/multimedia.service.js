@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const multimediaRepository = require('../repositories/multimedia.repository');
+const validacionIAService = require('./validacionIA.service');
+const notificacionService = require('./notificacion.service');
 const { Anuncio } = require('../models');
 
 class MultimediaService {
@@ -25,24 +27,62 @@ class MultimediaService {
     }
 
     const existingMultimedia = await multimediaRepository.findByAnuncioId(anuncioId);
-    let nextOrden = existingMultimedia.length > 0
+    const baseOrden = existingMultimedia.length > 0
       ? Math.max(...existingMultimedia.map(m => m.orden)) + 1
       : 0;
 
-    const records = files.map((file) => {
+    // Validación automática con IA (CLIP) por cada imagen, en paralelo.
+    // El flujo es síncrono: esperamos el veredicto antes de responder.
+    const multimedia = await Promise.all(files.map(async (file, index) => {
       const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
-      return {
+      const rutaAbsoluta = path.join(__dirname, '../..', 'uploads', file.filename);
+
+      const validacion = await validacionIAService.validarImagen(rutaAbsoluta);
+
+      const media = await multimediaRepository.create({
         anuncio_id: anuncioId,
         url_almacenamiento: `/uploads/${file.filename}`,
         tipo_archivo: ext,
-        estado: 'PENDIENTE',
+        estado: validacion.estado,
         fecha_subida: new Date(),
-        orden: nextOrden++,
-      };
-    });
+        orden: baseOrden + index,
+      });
 
-    const multimedia = await multimediaRepository.bulkCreate(records);
+      // Registro de auditoría solo cuando la IA efectivamente analizó la imagen.
+      if (validacion.analizado) {
+        await multimediaRepository.createRegistroValidacion({
+          multimedia_id: media.id,
+          etiqueta_detectada: validacion.etiqueta_detectada,
+          score_confianza: validacion.score_confianza,
+          decision_automatica: validacion.decision_automatica,
+          fecha_analisis: new Date(),
+        });
+      }
+
+      return media;
+    }));
+
+    // Aviso al arrendador si la IA rechazó automáticamente alguna imagen (best-effort).
+    const rechazadas = multimedia.filter(m => m.estado === 'RECHAZADA').length;
+    if (rechazadas > 0) {
+      this._notificarRechazo(usuarioId, anuncio, rechazadas);
+    }
+
     return { multimedia };
+  }
+
+  async _notificarRechazo(usuarioId, anuncio, cantidad) {
+    try {
+      await notificacionService.create(
+        usuarioId,
+        'SISTEMA',
+        'IN_APP',
+        'Imágenes rechazadas automáticamente',
+        `La validación por IA rechazó ${cantidad} ${cantidad === 1 ? 'imagen' : 'imágenes'} de tu anuncio "${anuncio.titulo}" por no corresponder a un alojamiento.`
+      );
+    } catch (error) {
+      console.error('Error al notificar rechazo de multimedia:', error.message);
+    }
   }
 
   async getByAnuncioId(anuncioId) {

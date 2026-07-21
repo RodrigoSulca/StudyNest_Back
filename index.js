@@ -8,6 +8,7 @@ const routes = require('./src/routes');
 const errorHandler = require('./src/middleware/error.middleware');
 const { sequelize } = require('./src/models');
 const { initSocket } = require('./src/config/socket');
+const validacionIAService = require('./src/services/validacionIA.service');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +40,8 @@ async function start() {
 
     server.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
+      // Precarga el modelo de validación IA en segundo plano (no bloquea el arranque).
+      validacionIAService.precargar();
     });
   } catch (error) {
     console.error('Failed to start server:', error);
